@@ -12,11 +12,12 @@ public class DatasetPattern {
 	/**
 	 * Constructor
 	 */
-	public DatasetPattern() {
+	public DatasetPattern(int id) {
 		this.features = new ArrayList<Double>();
 		this.isBoarder = false;
 		this.isNoise = false;
 		this.isVisited = false;
+		this.ID = id;
 	}
 	
 	/**
