@@ -3,6 +3,8 @@ package clustering.incremental;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import org.jfree.ui.RefineryUtilities;
+import ploting.Plotter2D;
 import measures.EuclideanDistance;
 import datasets.ChameleonLoader;
 import datasets.DatasetPattern;
@@ -215,6 +217,9 @@ public class IncrementalDBSCAN {
 		}
 	}
 
+	public ArrayList<Cluster> getClustersList() {
+		return clustersList;
+	}
 
 
 	
@@ -226,8 +231,15 @@ public class IncrementalDBSCAN {
 		long startTime = System.currentTimeMillis();
 		IncrementalDBSCAN incDBSCAN = new IncrementalDBSCAN(list, minpts, eps);
 		incDBSCAN.run();
+		ArrayList<Cluster> clustersList = incDBSCAN.getClustersList();
 		long endTime = System.currentTimeMillis();
 		System.out.println("Runtime = " + (endTime-startTime));
+
+		Plotter2D plotter = new Plotter2D("Clusters");
+		plotter.plot(list, clustersList);
+		plotter.pack();
+		RefineryUtilities.centerFrameOnScreen(plotter);
+		plotter.setVisible(true); 
 
 		
 	}
