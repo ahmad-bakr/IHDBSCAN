@@ -1,8 +1,10 @@
 package clustering.incremental;
 
+import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.Hashtable;
 import measures.EuclideanDistance;
+import datasets.ChameleonLoader;
 import datasets.DatasetPattern;
 
 public class IncrementalDBSCAN {
@@ -22,10 +24,145 @@ public class IncrementalDBSCAN {
 	}
 	
 	
-	private void clusterPoint(DatasetPattern pattern){
-		
+	private void clusterPattern(DatasetPattern pattern){
+		ArrayList<Integer> updSeedPointIndexs = getUpdSeedSet(pattern);
+		if(updSeedPointIndexs.size()==0){
+			 markAsNoise(pattern);
+		}
+		else if(updSeedContainsCorePatternsWithNoCluster(updSeedPointIndexs)){
+			createCluster(pattern, updSeedPointIndexs);
+		}
+		else if(updSeedContainsCorePatternsFromOneCluster(updSeedPointIndexs)){
+			joinCluster(pattern, updSeedPointIndexs);
+		}
+		else{
+			mergeClusters(pattern, updSeedPointIndexs);
+		}
+		pattern.isVisited(true);
+
+
 	}
 	
+	/**
+	 * Merge the clusters into the first cluster
+	 * @param point point
+	 * @param indexs updSeed points
+	 */
+	private void mergeClusters(DatasetPattern point,ArrayList<Integer> indexs){
+		ArrayList<Cluster> clusters = getClusterOfPoints(indexs);
+		Cluster masterCluster = clusters.get(0);
+		String masterClusterID = String.valueOf(masterCluster.getID());
+		point.assignedCluster(masterClusterID);
+		masterCluster.addPoint(point.getID());
+		for (int i = 1; i < clusters.size(); i++) {
+			Cluster c = clusters.get(i);
+			c.setActive(false);
+			ArrayList<Integer> cPoints = c.getPointsIDs();
+			for (int j = 0; j < cPoints.size(); j++) {
+				DatasetPattern p = this.dataset.get(cPoints.get(j));
+				p.assignedCluster(masterClusterID);
+				masterCluster.addPoint(p.getID());
+			}
+		}
+		//handleInsertionEffect(point, indexs);
+	}
+
+	/**
+	 * Collect the clusters ids of a updSeed
+	 * @param pointsIDs points of updSeed
+	 * @return list of clusters ids
+	 */
+	private ArrayList<Cluster> getClusterOfPoints(ArrayList<Integer> pointsIDs){
+		ArrayList<Cluster> clusters = new ArrayList<Cluster>();
+		Hashtable<String, Boolean> idsSeen = new Hashtable<String, Boolean>();
+		for (int i = 0; i < pointsIDs.size(); i++) {
+			DatasetPattern p = this.dataset.get(pointsIDs.get(i));
+			if(p.getAssignedCluster().equalsIgnoreCase("")) continue;
+			if(!idsSeen.containsKey(p.getAssignedCluster())){
+				clusters.add(this.clustersList.get(Integer.parseInt(p.getAssignedCluster())));
+				idsSeen.put(p.getAssignedCluster(), true);
+			}
+		}
+		return clusters;
+	}
+
+	
+	
+	/**
+	 * Add point to cluster (Given that all points at indexs come from only one cluster)
+	 * @param point the point
+	 * @param indexs indexes point
+	 */
+	private void joinCluster(DatasetPattern point, ArrayList<Integer> indexs){
+		String clusterID = this.dataset.get(indexs.get(0)).getAssignedCluster();
+		Cluster c = this.clustersList.get(Integer.parseInt(clusterID));
+		c.addPoint(point.getID());
+		point.assignedCluster(clusterID);
+	//	handleInsertionEffect(point, indexs);
+	}
+
+	
+	/**
+	 * Check if all points has the same cluster
+	 * @param indexs updSeed 
+	 * @return true if all points have the same clusters
+	 */
+	private boolean updSeedContainsCorePatternsFromOneCluster(ArrayList<Integer> indexs){
+		String clusterID = this.dataset.get(indexs.get(0)).getAssignedCluster();
+		for (int i = 1; i < indexs.size(); i++) {
+			DatasetPattern p = this.dataset.get(indexs.get(i));
+			if(!clusterID.equalsIgnoreCase(p.getAssignedCluster())) return false;
+		}
+		return true;
+	}
+
+	
+	
+	/**
+	 * create new cluster with the points
+	 * @param point datapoint
+	 * @param seedPointsIDs updSeed points
+	 */
+	private void createCluster(DatasetPattern point, ArrayList<Integer> seedPointsIDs){
+		Cluster c = new Cluster(this.clustersCount);
+		String clusterID = String.valueOf(c.getID());
+		this.clustersCount++;
+		point.assignedCluster(clusterID);
+		c.addPoint(point.getID());
+		for (int i = 0; i < seedPointsIDs.size(); i++) {
+			DatasetPattern p = this.dataset.get(seedPointsIDs.get(i));
+			p.assignedCluster(clusterID);
+			c.addPoint(p.getID());
+		}
+		this.clustersList.add(c);
+	//	handleInsertionEffect(point, seedPointsIDs);
+	}
+
+	
+	
+	/**
+	 * Check if all the core points has no assigned cluster
+	 * @param indexs updSeet set
+	 * @return true if no cluster is assigned to all points
+	 */
+	private boolean updSeedContainsCorePatternsWithNoCluster(ArrayList<Integer> indexs){
+		for (int i = 0; i < indexs.size(); i++) {
+			DatasetPattern p = this.dataset.get(indexs.get(i));
+			if(!p.getAssignedCluster().equalsIgnoreCase("")) return false;
+		}
+		return true;
+	}
+
+
+	
+	/**
+	 * Mark point as noise
+	 * @param point point
+	 */
+	private void markAsNoise(DatasetPattern p){
+		p.isNoise(true);
+	}
+
 	
 	/**
 	 * Get the updSeed set of a datapoint
@@ -50,8 +187,50 @@ public class IncrementalDBSCAN {
 		}
 		return updSeedIndex;
 	}
+	
+	public void run(){
+		for (int i = 0; i < this.dataset.size(); i++) {
+			System.out.println(i);
+			DatasetPattern p = this.dataset.get(i);
+			clusterPattern(p);
+		}
+		noiseLabel();
+	}
+	
+	
+	private void noiseLabel(){
+		for (int i = 0; i < this.dataset.size(); i++) {
+			DatasetPattern p = this.dataset.get(i);
+			if(!p.isNoise()) continue;
+			ArrayList<Integer> neighbors = p.getPointsAtEpsIndexs();
+			for (int j = 0; j < neighbors.size(); j++) {
+				DatasetPattern neighbor = this.dataset.get(neighbors.get(j));
+				if(neighbor.getAssignedCluster().equalsIgnoreCase("") || !neighbor.isCore(this.minPts)) continue;
+		//		if(neighbor.getIsNoise()) continue;	
+				p.assignedCluster(neighbor.getAssignedCluster());
+				Cluster c = this.clustersList.get(Integer.parseInt(p.getAssignedCluster()));
+				c.addPoint(p.getID());
+				break;
+			}
+		}
+	}
+
+
 
 	
+	public static void main(String[] args) throws IOException {
+		double eps = 10;
+		int minpts= 20;
+		ChameleonLoader loader = new ChameleonLoader();
+		ArrayList<DatasetPattern> list = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/chameleon-data/t4.8k.dat");
+		long startTime = System.currentTimeMillis();
+		IncrementalDBSCAN incDBSCAN = new IncrementalDBSCAN(list, minpts, eps);
+		incDBSCAN.run();
+		long endTime = System.currentTimeMillis();
+		System.out.println("Runtime = " + (endTime-startTime));
+
+		
+	}
 	
 
 
