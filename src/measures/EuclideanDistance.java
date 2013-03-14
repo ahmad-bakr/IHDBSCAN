@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import datasets.DatasetPattern;
 
-public class EuclideanDistance implements DistanceMeasure{
+public class EuclideanDistance {
 
-	@Override
-	public double calculateDistance(DatasetPattern p1, DatasetPattern p2) {
+	
+	public static double calculateDistance(DatasetPattern p1, DatasetPattern p2) {
 		ArrayList<Double> vector1 = p1.getFeatureVector();
 		ArrayList<Double> vector2 = p2.getFeatureVector();
 		int length = vector1.size();

@@ -8,6 +8,14 @@ public class DatasetPattern {
 	private boolean isNoise;
 	private boolean isBoarder;
 	private int ID;
+	private String originalCluster;
+	private String assignedCluster;
+	private int indexInPartition;
+	private int pointCausedToBeCore;
+	private ArrayList<Integer> pointsAtEpsIndexs;
+	private int assignedCentroidID;
+
+	
 	
 	/**
 	 * Constructor
@@ -18,6 +26,14 @@ public class DatasetPattern {
 		this.isNoise = false;
 		this.isVisited = false;
 		this.ID = id;
+		this.pointCausedToBeCore =-1;
+		this.originalCluster = "";
+		this.isVisited = false;
+		this.isNoise = false;
+		this.isBoarder = false;
+		this.assignedCluster="";
+		this.ID = id;
+		this.pointsAtEpsIndexs = new ArrayList<Integer>(); 
 	}
 	
 	/**
@@ -99,5 +115,68 @@ public class DatasetPattern {
 	public void isVisited(boolean visited){
 		this.isVisited = visited;
 	}
+	
+	
+	public int getPointCausedToBeCore() {
+		return pointCausedToBeCore;
+	}
+	
+	public void setAssignedCentroidID(int assignedCentroidID) {
+		this.assignedCentroidID = assignedCentroidID;
+	}
+	
+	public int getAssignedCentroidID() {
+		return assignedCentroidID;
+	}
+	
+	
+	public void pointCausedToBeCore(int pointCausedToBeCore) {
+		this.pointCausedToBeCore = pointCausedToBeCore;
+	}
+	
+	public ArrayList<Integer> getPointsAtEpsIndexs() {
+		return pointsAtEpsIndexs;
+	}
+	
+	public void addToNeighborhoodPoints(int i){
+		this.pointsAtEpsIndexs.add(i);
+	}
+
+	
+	public boolean isCore(int minPts){
+		if(this.pointsAtEpsIndexs.size()>= minPts) return true;
+		return false;
+	}
+	
+	public void assignedCluster(String assignedCluster) {
+		this.assignedCluster = assignedCluster;
+	}
+
+	public void originalCluster(String originalCluster) {
+		this.originalCluster = originalCluster;
+	}
+	
+	
+	public String getOriginalCluster() {
+		return originalCluster;
+	}
+	
+	public String getAssignedCluster() {
+		return assignedCluster;
+	}
+	
+	public void setIndexInPartition(int indexInPartition) {
+		this.indexInPartition = indexInPartition;
+	}
+	
+	public int getIndexInPartition() {
+		return indexInPartition;
+	}
+
+	
+	
+
+	
+	
 
 }
