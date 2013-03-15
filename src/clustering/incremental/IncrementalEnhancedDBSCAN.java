@@ -3,6 +3,10 @@ package clustering.incremental;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.jfree.ui.RefineryUtilities;
+
+import ploting.PlotEhancedDBSCAN;
+
 import measures.EuclideanDistance;
 
 import datasets.ChameleonLoader;
@@ -265,11 +269,11 @@ public class IncrementalEnhancedDBSCAN {
 		
 		
 		
-//		PlotEhancedDBSCAN plotter = new PlotEhancedDBSCAN("Clusters");
-//		plotter.plot(dataset, clusters);
-//		plotter.pack();
-//		RefineryUtilities.centerFrameOnScreen(plotter);
-//		plotter.setVisible(true); 
+		PlotEhancedDBSCAN plotter = new PlotEhancedDBSCAN("Clusters");
+		plotter.plot(dataset, clusters);
+		plotter.pack();
+		RefineryUtilities.centerFrameOnScreen(plotter);
+		plotter.setVisible(true); 
 
 		
 		
