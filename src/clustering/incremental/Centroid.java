@@ -131,6 +131,10 @@ public class Centroid {
 		return feature/sum;
 	}
 	
+	public DatasetPattern getPattern() {
+		return this.pattern;
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(Math.log10(0.5));
 		int x,y;
@@ -138,5 +142,7 @@ public class Centroid {
 		System.out.println(x);
 		System.out.println(y);
 	}
+	
+	
 	
 }
