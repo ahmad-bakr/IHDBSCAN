@@ -59,8 +59,6 @@ public class DaviesBouldin {
 			}
 			daviseMeasure += maxDistaceForCi;
 		}
-		System.out.println("daviseMeasure " + daviseMeasure);
-		System.out.println("clusterCount " + clusterCount);
 		return daviseMeasure/clusterCount;
 	}
 	

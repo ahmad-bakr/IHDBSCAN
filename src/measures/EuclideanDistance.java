@@ -15,6 +15,7 @@ public class EuclideanDistance {
 		for (int i = 0; i < length; i++) {
 			distance += Math.pow(vector1.get(i) - vector2.get(i), 2);
 		}
+//		System.out.println("distance = " + Math.sqrt(distance));
 		return Math.sqrt(distance);
 	}
 

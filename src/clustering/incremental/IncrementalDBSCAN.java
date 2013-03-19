@@ -243,10 +243,10 @@ public class IncrementalDBSCAN {
 
 	
 	public static void main(String[] args) throws Exception {
-		double eps = 30;
-		int minpts= 5;
+		double eps = 17;
+		int minpts= 2;
 		DatasetLoaderIF loader = new OptsDigitsDataset();
-		ArrayList<DatasetPattern> dataset = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/pendigit/all_data.txt");
+		ArrayList<DatasetPattern> dataset = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/optdigits/all_data.txt");
 		long startTime = System.currentTimeMillis();
 		IncrementalDBSCAN incDBSCAN = new IncrementalDBSCAN(dataset, minpts, eps);
 		incDBSCAN.run();
@@ -254,17 +254,19 @@ public class IncrementalDBSCAN {
 		long endTime = System.currentTimeMillis();
 		System.out.println("Incremental DBSCAN Results");
 		System.out.println("==================================");
-		System.out.println("Runtime = " + (endTime-startTime));
 		incDBSCAN.printClustersInformation();
 		FMeasure fmeasure = new FMeasure();
 		fmeasure.calculate(clustersList, loader);
+		System.out.println("Runtime = " + (endTime-startTime));
+		System.out.println("EPS = " + eps);
+		System.out.println("Minpts = " + minpts);
 		System.out.println("Fmeasure = " + fmeasure.getFmeasure());
 		System.out.println("Precision = "+ fmeasure.getPrecision());
 		System.out.println("Recall = "+ fmeasure.getRecall());
-//		DunnIndex dunn = new DunnIndex(clustersList, dataset);
-//		System.out.println("Dunn Index = " + dunn.calculateDunnIndex());
-//		DaviesBouldin davies = new DaviesBouldin(clustersList, dataset);
-//		System.out.println("Davies Measure = " + davies.calculateDaviesMeasure());
+		DunnIndex dunn = new DunnIndex(clustersList, dataset);
+		System.out.println("Dunn Index = " + dunn.calculateDunnIndex());
+		DaviesBouldin davies = new DaviesBouldin(clustersList, dataset);
+		System.out.println("Davies Measure = " + davies.calculateDaviesMeasure());
 
 		
 	}

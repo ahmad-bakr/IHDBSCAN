@@ -26,7 +26,9 @@ public class FMeasure {
 	
 	
 	public double getFmeasure() {
-		return (2.0*this.precision*this.recall)/(this.precision+this.recall);
+		System.out.println(this.patternsCount);
+		//return (2.0*this.precision*this.recall)/(this.precision+this.recall);
+		return this.fmeasure;
 	}
 
 	public double getPrecision() {
