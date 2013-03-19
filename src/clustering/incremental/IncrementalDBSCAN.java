@@ -10,6 +10,7 @@ import datasets.ChameleonLoader;
 import datasets.DatasetLoaderIF;
 import datasets.DatasetPattern;
 import datasets.OptsDigitsDataset;
+import datasets.TimeSeriesDataset;
 import evaluation.DaviesBouldin;
 import evaluation.DunnIndex;
 import evaluation.FMeasure;
@@ -243,10 +244,10 @@ public class IncrementalDBSCAN {
 
 	
 	public static void main(String[] args) throws Exception {
-		double eps = 17;
-		int minpts= 2;
-		DatasetLoaderIF loader = new OptsDigitsDataset();
-		ArrayList<DatasetPattern> dataset = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/optdigits/all_data.txt");
+		double eps = 5;
+		int minpts= 18;
+		DatasetLoaderIF loader = new TimeSeriesDataset();
+		ArrayList<DatasetPattern> dataset = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/time_series_date/synthetic_control_charts_SCC.txt");
 		long startTime = System.currentTimeMillis();
 		IncrementalDBSCAN incDBSCAN = new IncrementalDBSCAN(dataset, minpts, eps);
 		incDBSCAN.run();
