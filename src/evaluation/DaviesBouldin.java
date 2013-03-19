@@ -43,7 +43,7 @@ public class DaviesBouldin {
 		for (int i = 0; i < this.clusters.size(); i++) {
 			Cluster ci = this.clusters.get(i);
 			if(!ci.getIsActive()) continue;
-			if(ci.getPointsIDs().size() < 30) continue;
+		//	if(ci.getPointsIDs().size() < 30) continue;
 			clusterCount ++;
 			double maxDistaceForCi = Double.MIN_VALUE;
 			double avgDistanceForCi = calculateAverageDistanceInCluster(ci)/2;
@@ -59,6 +59,8 @@ public class DaviesBouldin {
 			}
 			daviseMeasure += maxDistaceForCi;
 		}
+		System.out.println("daviseMeasure " + daviseMeasure);
+		System.out.println("clusterCount " + clusterCount);
 		return daviseMeasure/clusterCount;
 	}
 	

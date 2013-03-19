@@ -21,6 +21,7 @@ public class ChameleonLoader implements DatasetLoaderIF{
 			String [] tokens = strLine.split(" ");
 			DatasetPattern pattern = new DatasetPattern(id);
 			for (int i = 0; i < tokens.length; i++) {
+				System.out.println(tokens[i]);
 				pattern.addFeature(Double.parseDouble(tokens[i]));
 			}
 			id++;
@@ -29,6 +30,32 @@ public class ChameleonLoader implements DatasetLoaderIF{
 		return list;
 	}
 	
+	@Override
+	public int getNumberofPatternsInClass(String className) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+
+	@Override
+	public ArrayList<DatasetPattern> getDataset() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<String> getClassesNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getNumberOfAllPatterns() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	public static void main(String[] args) throws IOException {
 		ChameleonLoader loader = new ChameleonLoader();
 		ArrayList<DatasetPattern> list = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/chameleon-data/t4.8k.dat");
@@ -37,5 +64,7 @@ public class ChameleonLoader implements DatasetLoaderIF{
 		System.out.println(list.get(0).getFeatureVector().get(1));
 
 	}
+
+
 
 }

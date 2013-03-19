@@ -8,6 +8,9 @@ import ploting.Plotter2D;
 import measures.EuclideanDistance;
 import datasets.ChameleonLoader;
 import datasets.DatasetPattern;
+import datasets.OptsDigitsDataset;
+import evaluation.DaviesBouldin;
+import evaluation.DunnIndex;
 
 public class IncrementalDBSCAN {
 	
@@ -177,6 +180,7 @@ public class IncrementalDBSCAN {
 			DatasetPattern p = this.dataset.get(i);
 			if(!p.isVisited()) break;
 			double distance = EuclideanDistance.calculateDistance(pattern, p);
+		//	System.out.println("distance = " + distance);
 			if(distance > this.eps) continue;
 			pattern.addToNeighborhoodPoints(p.getID());
 			p.addToNeighborhoodPoints(pattern.getID());
@@ -220,26 +224,39 @@ public class IncrementalDBSCAN {
 	public ArrayList<Cluster> getClustersList() {
 		return clustersList;
 	}
+	
+	public void printClustersInformation(){
+		int cluster_num = 1;
+		System.out.println("Dataset has " + this.dataset.size() + " Points");
+		for (int i = 0; i < this.clustersList.size(); i++) {
+			Cluster c = this.clustersList.get(i);
+			if(!c.getIsActive()) continue;
+			if(c.getPointsIDs().size() < 30) continue;
+			System.out.println("Cluster " + cluster_num + " has " + c.getPointsIDs().size() + " Points");
+			cluster_num++;
+		}
+	}
 
 
 	
 	public static void main(String[] args) throws IOException {
-		double eps = 10;
-		int minpts= 20;
-		ChameleonLoader loader = new ChameleonLoader();
-		ArrayList<DatasetPattern> list = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/chameleon-data/t4.8k.dat");
+		double eps = 30;
+		int minpts= 5;
+		OptsDigitsDataset loader = new OptsDigitsDataset();
+		ArrayList<DatasetPattern> dataset = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/pendigit/all_data.txt");
 		long startTime = System.currentTimeMillis();
-		IncrementalDBSCAN incDBSCAN = new IncrementalDBSCAN(list, minpts, eps);
+		IncrementalDBSCAN incDBSCAN = new IncrementalDBSCAN(dataset, minpts, eps);
 		incDBSCAN.run();
 		ArrayList<Cluster> clustersList = incDBSCAN.getClustersList();
 		long endTime = System.currentTimeMillis();
+		System.out.println("Incremental DBSCAN Results");
+		System.out.println("==================================");
 		System.out.println("Runtime = " + (endTime-startTime));
-
-		Plotter2D plotter = new Plotter2D("Clusters");
-		plotter.plot(list, clustersList);
-		plotter.pack();
-		RefineryUtilities.centerFrameOnScreen(plotter);
-		plotter.setVisible(true); 
+		incDBSCAN.printClustersInformation();
+//		DunnIndex dunn = new DunnIndex(clustersList, dataset);
+//		System.out.println("Dunn Index = " + dunn.calculateDunnIndex());
+//		DaviesBouldin davies = new DaviesBouldin(clustersList, dataset);
+//		System.out.println("Davies Measure = " + davies.calculateDaviesMeasure());
 
 		
 	}

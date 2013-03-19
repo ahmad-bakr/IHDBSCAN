@@ -240,5 +240,9 @@ public class IncrementalDBSCANPartitioner {
 	private void markAsNoise(DatasetPattern point) {
 		point.isNoise(true);
 	}
+	
+	public static void main(String[] args) {
+		
+	}
 
 }

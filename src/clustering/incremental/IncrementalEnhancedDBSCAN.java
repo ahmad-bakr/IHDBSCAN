@@ -255,27 +255,17 @@ public class IncrementalEnhancedDBSCAN {
 		IncrementalEnhancedDBSCAN algorithm = new IncrementalEnhancedDBSCAN(dataset, numPartitions, minPts, eps, alpha);
 		algorithm.run();
 		long endTime = System.currentTimeMillis();
-		System.out.println("Runtime = " + (endTime-startTime));
+		System.out.println("Incremental Ehnaced DBSCAN Results");
+		System.out.println("==================================");
+		System.out.println("Number of Partition = " + numPartitions);
+		System.out.println("Runtime = " + (endTime-startTime) + "Ms");
 		ArrayList<Cluster> clusters = algorithm.getClusters();
+		System.out.println("Number of Clusters " + clusters.size());
 		ArrayList<DenseRegion> regions = new ArrayList<DenseRegion>();
-		
-
 		DunnIndex dunn = new DunnIndex(clusters, regions ,dataset);
 		System.out.println("Dunn Index = " + dunn.calculateDunnIndex());
-
 		DaviesBouldin davies = new DaviesBouldin(clusters, dataset);
-		System.out.println("Davies Measure = " + davies.calculateDaviesMeasure());
-		
-		
-		
-		
-		PlotEhancedDBSCAN plotter = new PlotEhancedDBSCAN("Clusters");
-		plotter.plot(dataset, clusters);
-		plotter.pack();
-		RefineryUtilities.centerFrameOnScreen(plotter);
-		plotter.setVisible(true); 
-
-		
+		System.out.println("Davies Measure = " + davies.calculateDaviesMeasure());		
 		
 	}
 	
