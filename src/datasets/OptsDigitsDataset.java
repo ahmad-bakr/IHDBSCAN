@@ -48,9 +48,9 @@ public class OptsDigitsDataset implements DatasetLoaderIF{
 				this.classesInfo.put(className, 1);
 			}
 			
+			this.dataset.add(pattern);
 		
 			id++;
-			this.dataset.add(pattern);
 		}
 		return this.dataset;
 	}

@@ -32,7 +32,6 @@ public class DatasetPattern {
 		this.isNoise = false;
 		this.isBoarder = false;
 		this.assignedCluster="";
-		this.ID = id;
 		this.pointsAtEpsIndexs = new ArrayList<Integer>(); 
 	}
 	

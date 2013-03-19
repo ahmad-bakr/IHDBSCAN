@@ -180,6 +180,7 @@ public class IncrementalDBSCAN {
 		ArrayList<Integer> updSeedIndex = new ArrayList<Integer>();
 		for (int i = 0; i < this.dataset.size(); i++) {
 			DatasetPattern p = this.dataset.get(i);
+			if(pattern.getID() == p.getID()) continue;
 			if(!p.isVisited()) break;
 			double distance = EuclideanDistance.calculateDistance(pattern, p);
 		//	System.out.println("distance = " + distance);

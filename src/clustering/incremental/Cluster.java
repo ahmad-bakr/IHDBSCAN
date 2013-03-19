@@ -1,6 +1,7 @@
 package clustering.incremental;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 
 public class Cluster {
@@ -8,17 +9,23 @@ public class Cluster {
 	private ArrayList<DenseRegion> regions;
 	private boolean isActive;
 	private ArrayList<Integer> pointsIDs;
+	private Hashtable<Integer, Boolean> pointsSeen;
+	
 	
 	public Cluster(int id) {
 		this.regions = new ArrayList<DenseRegion>();
 		this.ID = id;
 		this.isActive = true;
 		this.pointsIDs = new ArrayList<Integer>();
+		this.pointsSeen = new Hashtable<Integer, Boolean>();
 	}
 	
 	
 	public void addPoint(int index){
-		this.pointsIDs.add(index);
+		if(!this.pointsSeen.containsKey(index)){
+			this.pointsIDs.add(index);
+			this.pointsSeen.put(index, true);
+		}
 	}
 	
 	public ArrayList<Integer> getPointsIDs() {

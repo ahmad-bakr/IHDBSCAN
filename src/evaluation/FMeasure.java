@@ -14,6 +14,7 @@ public class FMeasure {
 	private double recall;
 	private double fmeasure;
 	private Hashtable<String, ArrayList<Integer>> confusionMatrix;
+	private int patternsCount=0;
 	
 	
 	public FMeasure() {
@@ -37,12 +38,23 @@ public class FMeasure {
 	}
 	
 	
+	public int getClustersSize(ArrayList<Cluster> clusters){
+		int count = 0 ;
+		for (int i = 0; i < clusters.size(); i++) {
+			if(!clusters.get(i).getIsActive()) continue;
+			if(clusters.get(i).getPointsIDs().size() < 30) continue;
+			count++;
+		}
+		return count;
+	}
 
 	public void calculate(ArrayList<Cluster> clusters , DatasetLoaderIF datasetManager) throws Exception{
 		ArrayList<String> classes = datasetManager.getClassesNames();
 		initializeConfusionMartix(classes, clusters.size());
 		
 		for (int i = 0; i < clusters.size(); i++) {
+			if(!clusters.get(i).getIsActive()) continue;
+			if(clusters.get(i).getPointsIDs().size() < 30) continue;
 			processCluster(clusters.get(i), datasetManager.getDataset());
 		}
 
@@ -54,9 +66,9 @@ public class FMeasure {
 			this.precision += values[0] * datasetManager.getNumberofPatternsInClass(className);
 		}
 
-		this.fmeasure = (this.fmeasure*1.0)/datasetManager.getNumberOfAllPatterns();
-		this.precision = (this.precision*1.0)/datasetManager.getNumberOfAllPatterns();
-		this.recall = (this.recall*1.0)/datasetManager.getNumberOfAllPatterns();
+		this.fmeasure = (this.fmeasure*1.0)/this.patternsCount;
+		this.precision = (this.precision*1.0)/this.patternsCount;
+		this.recall = (this.recall*1.0)/this.patternsCount;
 
 	}
 	
@@ -106,6 +118,8 @@ public class FMeasure {
 		int clusterIDIndex = cluster.getID(); 
 		for (int i = 0; i < pointsIDs.size(); i++) {
 			DatasetPattern pattern = dataset.get(i);
+			if (pattern.isNoise()) continue;
+			this.patternsCount++;
 			String originalClass = pattern.getOriginalCluster();
 			int count = this.confusionMatrix.get(originalClass).get(clusterIDIndex);
 			this.confusionMatrix.get(originalClass).set(clusterIDIndex, count +1);
