@@ -36,10 +36,18 @@ public class OptsDigitsDataset implements DatasetLoaderIF{
 			for (int i = 0; i < tokens.length-1; i++) {
 				pattern.addFeature(Double.parseDouble(tokens[i].trim()));
 			}
-			pattern.originalCluster(String.valueOf(tokens[tokens.length-1]));
 			
-			int count = this.classesInfo.get(String.valueOf(tokens[tokens.length-1]));
-			this.classesInfo.put(String.valueOf(tokens[tokens.length-1]), count + 1);
+			String className = String.valueOf(tokens[tokens.length-1]);
+			pattern.originalCluster(className);
+			
+			if(this.classesInfo.containsKey(className)){
+				int count = this.classesInfo.get(className);
+				this.classesInfo.put(className, count + 1);
+				
+			}else{
+				this.classesInfo.put(className, 1);
+			}
+			
 		
 			id++;
 			this.dataset.add(pattern);

@@ -7,10 +7,12 @@ import org.jfree.ui.RefineryUtilities;
 import ploting.Plotter2D;
 import measures.EuclideanDistance;
 import datasets.ChameleonLoader;
+import datasets.DatasetLoaderIF;
 import datasets.DatasetPattern;
 import datasets.OptsDigitsDataset;
 import evaluation.DaviesBouldin;
 import evaluation.DunnIndex;
+import evaluation.FMeasure;
 
 public class IncrementalDBSCAN {
 	
@@ -239,10 +241,10 @@ public class IncrementalDBSCAN {
 
 
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		double eps = 30;
 		int minpts= 5;
-		OptsDigitsDataset loader = new OptsDigitsDataset();
+		DatasetLoaderIF loader = new OptsDigitsDataset();
 		ArrayList<DatasetPattern> dataset = loader.loadDataset("/media/4B27441968D9A496/master/Enhanced Incremental DBSCAN/datasets/pendigit/all_data.txt");
 		long startTime = System.currentTimeMillis();
 		IncrementalDBSCAN incDBSCAN = new IncrementalDBSCAN(dataset, minpts, eps);
@@ -253,6 +255,11 @@ public class IncrementalDBSCAN {
 		System.out.println("==================================");
 		System.out.println("Runtime = " + (endTime-startTime));
 		incDBSCAN.printClustersInformation();
+		FMeasure fmeasure = new FMeasure();
+		fmeasure.calculate(clustersList, loader);
+		System.out.println("Fmeasure = " + fmeasure.getFmeasure());
+		System.out.println("Precision = "+ fmeasure.getPrecision());
+		System.out.println("Recall = "+ fmeasure.getRecall());
 //		DunnIndex dunn = new DunnIndex(clustersList, dataset);
 //		System.out.println("Dunn Index = " + dunn.calculateDunnIndex());
 //		DaviesBouldin davies = new DaviesBouldin(clustersList, dataset);

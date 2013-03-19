@@ -1,5 +1,6 @@
 package evaluation;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -9,14 +10,13 @@ import datasets.DatasetPattern;
 
 public class FMeasure {
 	
-	private ArrayList<Cluster> clusters;
 	private double precision;
 	private double recall;
 	private double fmeasure;
 	private Hashtable<String, ArrayList<Integer>> confusionMatrix;
 	
 	
-	public FMeasure(ArrayList<Cluster> clustersList) {
+	public FMeasure() {
 		this.precision = 0;
 		this.recall = 0;
 		this.fmeasure = 0;
@@ -48,7 +48,7 @@ public class FMeasure {
 
 		for (int i = 0; i < classes.size(); i++) {
 			String className = classes.get(i);
-			double values [] = calculateFMeasureForClass(className, datasetManager);
+			double values [] = calculateFMeasureForClass(className, datasetManager, clusters);
 			this.fmeasure += values[2] * datasetManager.getNumberofPatternsInClass(className);
 			this.recall += values[1] * datasetManager.getNumberofPatternsInClass(className) ;
 			this.precision += values[0] * datasetManager.getNumberofPatternsInClass(className);
@@ -61,7 +61,7 @@ public class FMeasure {
 	}
 	
 	
-	private double[] calculateFMeasureForClass(String className, DatasetLoaderIF datasetManager){
+	private double[] calculateFMeasureForClass(String className, DatasetLoaderIF datasetManager, ArrayList<Cluster> clusters){
 		double values [] = new double[3] ;
 		double maxFMeasure = 0;
 		double maxPrecision = 0;
@@ -69,8 +69,8 @@ public class FMeasure {
 		ArrayList<Integer> list = this.confusionMatrix.get(className);
 		int classSize = datasetManager.getNumberofPatternsInClass(className);
 		for (int i = 0; i < list.size(); i++) {
-			int clusterID = (i+1);
-			int clustersize = this.clusters.get(clusterID).getPointsIDs().size();
+			int clusterID = i;
+			int clustersize = clusters.get(clusterID).getPointsIDs().size();
 			double precision = (list.get(i)*1.0)/clustersize;
 			double recall = (list.get(i)*1.0)/classSize;
 			double fmeasure = (2*precision*recall)/(precision+recall);
@@ -103,7 +103,7 @@ public class FMeasure {
 	
 	private void processCluster(Cluster cluster, ArrayList<DatasetPattern> dataset) {
 		ArrayList<Integer> pointsIDs = cluster.getPointsIDs();
-		int clusterIDIndex = cluster.getID() - 1; 
+		int clusterIDIndex = cluster.getID(); 
 		for (int i = 0; i < pointsIDs.size(); i++) {
 			DatasetPattern pattern = dataset.get(i);
 			String originalClass = pattern.getOriginalCluster();
